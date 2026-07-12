@@ -84,6 +84,12 @@ RUN apk add --no-cache tini poppler-utils bash git && \
     addgroup -S -g 1001 open-design && \
     adduser -S -D -H -u 1001 -G open-design open-design
 
+# AMR agent runtime needs the vela CLI on PATH; upstream doesn't bundle it
+# for self-hosted/Docker deploys (only the Electron desktop build packages
+# it under OD_RESOURCE_ROOT). Installed globally as root so /usr/local/bin/vela
+# is world-executable for the open-design runtime user below.
+RUN npm install -g @powerformer/vela-cli@0.0.21
+
 WORKDIR /app
 COPY --from=build --chown=open-design:open-design /app/deploy/daemon ./apps/daemon
 COPY --from=build --chown=open-design:open-design /app/apps/web/out ./apps/web/out
